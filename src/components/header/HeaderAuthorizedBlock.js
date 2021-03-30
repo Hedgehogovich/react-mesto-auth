@@ -11,6 +11,9 @@ function HeaderAuthorizedBlock({isMobileMenuOpened, onMenuToggle}) {
         type="button"
         onClick={onMenuToggle}
         className={buttonClassName}
+        aria-expanded={isMobileMenuOpened}
+        aria-controls="mobile-menu"
+        aria-label="Открыть меню"
       />
     </>
   );

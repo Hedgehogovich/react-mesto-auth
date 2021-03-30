@@ -1,6 +1,6 @@
 import {useContext} from 'react';
 
-import CurrentUserContext from '../contexts/CurrentUserContext';
+import CurrentUserContext from '../../contexts/CurrentUserContext';
 
 function HeaderAuthorizedMobileMenu({isOpened}) {
   const currentUser = useContext(CurrentUserContext);
@@ -8,7 +8,7 @@ function HeaderAuthorizedMobileMenu({isOpened}) {
     + (isOpened ? ' header__menu_mobile_opened' : '');
 
   return (
-    <div className={menuClassName}>
+    <div id="mobile-menu" className={menuClassName}>
       {/*todo: email*/}
       <p className="header__username">
         {currentUser?.name}

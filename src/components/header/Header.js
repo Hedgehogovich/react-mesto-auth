@@ -5,7 +5,7 @@ import HeaderAuthorizedBlock from './HeaderAuthorizedBlock';
 import HeaderLogo from './HeaderLogo';
 import HeaderAuthorizedMobileMenu from './HeaderAuthorizedMobileMenu';
 
-import CurrentUserContext from '../contexts/CurrentUserContext';
+import CurrentUserContext from '../../contexts/CurrentUserContext';
 
 function Header() {
   const currentUser = useContext(CurrentUserContext);
