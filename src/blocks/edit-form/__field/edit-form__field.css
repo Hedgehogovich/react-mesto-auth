@@ -1,0 +1,19 @@
+.edit-form__field {
+  display: flex;
+  flex-direction: column;
+
+  margin-bottom: 13px;
+
+  box-sizing: border-box;
+  min-height: 50px;
+}
+
+.edit-form__field:last-of-type {
+  margin-bottom: 31px;
+}
+
+@media screen and (max-width: 540px) {
+  .edit-form__field:last-of-type {
+    margin-bottom: 34px;
+  }
+}
