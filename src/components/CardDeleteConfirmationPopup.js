@@ -1,9 +1,7 @@
 import PopupWithForm from './PopupWithForm';
 
 function CardDeleteConfirmationPopup({isOpen, onClose, onCardDeleteConfirmation, isLoading}) {
-  function handleSubmit(e) {
-    e.preventDefault();
-
+  function handleSubmit() {
     onCardDeleteConfirmation();
   }
 

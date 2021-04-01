@@ -1,32 +1,18 @@
-import {useState, useEffect} from 'react';
-
 import PopupWithForm from './PopupWithForm';
-import PopupWithFormInput from './PopupWithFormInput';
+import UiInput from './UiInput';
+
+import {
+  createMaxLengthValidationRule,
+  createMinLengthValidationRule,
+  createRequiredValidationRule,
+  createUrlValidationRule,
+  createValidationRulesObject
+} from '../utils/validationRules';
 
 function AddPlacePopup({isOpen, onClose, onAddPlace, isLoading}) {
-  const [name, setName] = useState('');
-  const [link, setLink] = useState('');
-
-  function handleNameChange(evt) {
-    setName(evt.target.value);
+  function handleFormSubmit(formData) {
+    onAddPlace(formData);
   }
-
-  function handleLinkChange(evt) {
-    setLink(evt.target.value);
-  }
-
-  function handleFormSubmit(evt) {
-    evt.preventDefault();
-
-    onAddPlace({name, link});
-  }
-
-  useEffect(() => {
-    if (isOpen) {
-      setName('');
-      setLink('');
-    }
-  }, [isOpen])
 
   return (
     <PopupWithForm
@@ -37,25 +23,26 @@ function AddPlacePopup({isOpen, onClose, onAddPlace, isLoading}) {
       onClose={onClose}
       onSubmit={handleFormSubmit}
     >
-      <PopupWithFormInput
+      <UiInput
         id="place-name"
-        value={name}
-        onChange={handleNameChange}
+        name="name"
         type="text"
-        name="place-name"
         placeholder="Название"
-        required
-        minLength="2"
-        maxLength="30"
+        validationRules={createValidationRulesObject(
+          createRequiredValidationRule(),
+          createMinLengthValidationRule(2),
+          createMaxLengthValidationRule(30),
+        )}
       />
-      <PopupWithFormInput
+      <UiInput
         id="picture"
-        value={link}
-        onChange={handleLinkChange}
-        type="url"
         name="link"
+        type="url"
         placeholder="Ссылка на картинку"
-        required
+        validationRules={createValidationRulesObject(
+          createRequiredValidationRule(),
+          createUrlValidationRule()
+        )}
       />
     </PopupWithForm>
   );

@@ -1,29 +1,38 @@
 import {useEffect} from 'react';
+import {useForm} from 'react-hook-form';
 
 import PopupContainer from './PopupContainer';
-
-import PopupOpenedContext from '../contexts/PopupOpenedContext';
-
-import {useFormValidation} from '../hooks/useFormValidation';
+import UiForm from './UiForm';
 
 function PopupWithForm({
-   name,
-   title,
-   isOpen,
-   onClose,
-   onSubmit,
-   isLoading,
-   children,
-   submitButtonText = 'Сохранить'
+  name,
+  title,
+  isOpen,
+  onClose,
+  onSubmit,
+  isLoading,
+  children,
+  controlledValues,
+  submitButtonText = 'Сохранить'
 }) {
-  const {ref, isValid, handleSubmit, checkValidity} = useFormValidation();
-  const submitButtonClassName = `edit-form__submit${isValid ? '' : ' edit-form__submit_disabled'}`;
+  const {
+    handleSubmit,
+    trigger,
+    reset,
+    register,
+    formState
+  } = useForm({
+    mode: 'onChange',
+    ...(controlledValues ? {defaultValues: controlledValues} : {}),
+  });
 
   useEffect(() => {
     if (isOpen) {
-      checkValidity();
+      trigger();
+    } else {
+      reset(controlledValues ? {...controlledValues} : undefined);
     }
-  }, [checkValidity, isOpen]);
+  }, [trigger, reset, controlledValues, isOpen]);
 
   return (
     <PopupContainer
@@ -32,24 +41,18 @@ function PopupWithForm({
       wrapperClassName="popup__container_form"
       onClose={onClose}
     >
-      <form
-        ref={ref}
-        onSubmit={handleSubmit(onSubmit)}
-        onChange={checkValidity}
+      <UiForm
         name={name}
-        className="edit-form"
-        noValidate
+        title={title}
+        register={register}
+        formState={formState}
+        onSubmit={handleSubmit(onSubmit)}
+        submitButtonText={submitButtonText}
+        isLoading={isLoading}
+        loadingInProgressText="Сохранение..."
       >
-        <h2 className="edit-form__title">
-          {title}
-        </h2>
-        <PopupOpenedContext.Provider value={isOpen}>
-          {children}
-        </PopupOpenedContext.Provider>
-        <button className={submitButtonClassName} disabled={!isValid || isLoading} type="submit">
-          {isLoading ? 'Сохранение...' : submitButtonText}
-        </button>
-      </form>
+        {children}
+      </UiForm>
     </PopupContainer>
   );
 }

@@ -1,26 +1,15 @@
-import {useEffect, useState} from 'react';
-
 import PopupWithForm from './PopupWithForm';
-import PopupWithFormInput from './PopupWithFormInput';
+import UiInput from './UiInput';
+
+import {
+  createRequiredValidationRule, createUrlValidationRule,
+  createValidationRulesObject
+} from '../utils/validationRules';
 
 function EditAvatarPopup({isOpen, onClose, onUpdateAvatar, isLoading}) {
-  const [avatar, setAvatar] = useState('');
-
-  function handleAvatarChange(evt) {
-    setAvatar(evt.target.value);
+  function handleFormSubmit(formData) {
+    onUpdateAvatar(formData);
   }
-
-  function handleFormSubmit(evt) {
-    evt.preventDefault();
-
-    onUpdateAvatar(avatar);
-  }
-
-  useEffect(() => {
-    if (isOpen) {
-      setAvatar('');
-    }
-  }, [isOpen])
 
   return (
     <PopupWithForm
@@ -31,14 +20,15 @@ function EditAvatarPopup({isOpen, onClose, onUpdateAvatar, isLoading}) {
       onClose={onClose}
       onSubmit={handleFormSubmit}
     >
-      <PopupWithFormInput
+      <UiInput
         id="avatar"
-        value={avatar}
-        onChange={handleAvatarChange}
-        type="url"
         name="avatar"
+        type="url"
         placeholder="Ссылка на аватар"
-        required
+        validationRules={createValidationRulesObject(
+          createRequiredValidationRule(),
+          createUrlValidationRule()
+        )}
       />
     </PopupWithForm>
   );

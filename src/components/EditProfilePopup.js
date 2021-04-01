@@ -1,36 +1,33 @@
-import {useState, useEffect, useContext} from 'react';
+import {useContext, useEffect, useState} from 'react';
 
 import PopupWithForm from './PopupWithForm';
-import PopupWithFormInput from './PopupWithFormInput';
+
+import UiInput from './UiInput';
 
 import CurrentUserContext from '../contexts/CurrentUserContext';
+import {
+  createMaxLengthValidationRule,
+  createMinLengthValidationRule,
+  createRequiredValidationRule,
+  createValidationRulesObject
+} from '../utils/validationRules';
 
 function EditProfilePopup({isOpen, onClose, onUpdateUser, isLoading}) {
-  const [name, setName] = useState('');
-  const [about, setAbout] = useState('');
-
   const currentUser = useContext(CurrentUserContext);
+  const [controlledValues, setControlledValues] = useState({name: '', about: ''});
 
-  function handleNameChange(evt) {
-    setName(evt.target.value);
-  }
-
-  function handleDescriptionChange(evt) {
-    setAbout(evt.target.value);
-  }
-
-  function handleSubmit(evt) {
-    evt.preventDefault();
-
-    onUpdateUser({name, about});
+  function handleSubmit(formData) {
+    onUpdateUser(formData);
   }
 
   useEffect(() => {
     if (currentUser) {
-      setName(currentUser.name);
-      setAbout(currentUser.about);
+      setControlledValues({
+        name: currentUser.name,
+        about: currentUser.about,
+      });
     }
-  }, [isOpen, currentUser]);
+  }, [currentUser])
 
   return (
     <PopupWithForm
@@ -38,28 +35,29 @@ function EditProfilePopup({isOpen, onClose, onUpdateUser, isLoading}) {
       title="Редактировать профиль"
       isLoading={isLoading}
       isOpen={isOpen}
+      controlledValues={controlledValues}
       onClose={onClose}
       onSubmit={handleSubmit}
     >
-      <PopupWithFormInput
+      <UiInput
         id="name"
-        value={name}
-        onChange={handleNameChange}
         name="name"
         type="text"
-        required
-        minLength="2"
-        maxLength="40"
+        validationRules={createValidationRulesObject(
+          createRequiredValidationRule(),
+          createMinLengthValidationRule(2),
+          createMaxLengthValidationRule(40),
+        )}
       />
-      <PopupWithFormInput
+      <UiInput
         id="about"
-        value={about}
-        onChange={handleDescriptionChange}
         name="about"
         type="text"
-        required
-        minLength="2"
-        maxLength="200"
+        validationRules={createValidationRulesObject(
+          createRequiredValidationRule(),
+          createMinLengthValidationRule(2),
+          createMaxLengthValidationRule(200),
+        )}
       />
     </PopupWithForm>
   );
