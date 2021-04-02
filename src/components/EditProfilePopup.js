@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from 'react';
 
 import PopupWithForm from './PopupWithForm';
 
-import UiInput from './UiInput';
+import UiInput from './form/UiInput';
 
 import CurrentUserContext from '../contexts/CurrentUserContext';
 import {

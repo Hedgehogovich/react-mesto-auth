@@ -2,6 +2,15 @@ export function createRequiredValidationRule() {
   return {required: 'Заполните это поле'};
 }
 
+export function createEmailValidationRule() {
+  return {
+    pattern: {
+      value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      message: 'Введите Email.'
+    }
+  }
+}
+
 export function createMinLengthValidationRule(minLength) {
   return {
     minLength: {
@@ -24,7 +33,7 @@ export function createUrlValidationRule() {
   return {
     pattern: {
       value: /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/,
-      message: 'Введите URL-адрес',
+      message: 'Введите URL-адрес.',
     }
   };
 }

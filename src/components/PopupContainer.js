@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 
-import {escapeButtonKey} from '../utils/utils';
+import {ESCAPE_BUTTON_KEY} from '../utils/utils';
 
 function PopupContainer({
   isOpen,
@@ -23,7 +23,7 @@ function PopupContainer({
 
   useEffect(() => {
     function onKeyUp({key}) {
-      if (key === escapeButtonKey) {
+      if (key === ESCAPE_BUTTON_KEY) {
         onClose();
       }
     }

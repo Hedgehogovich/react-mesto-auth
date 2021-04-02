@@ -2,7 +2,9 @@ import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 
 import PopupContainer from './PopupContainer';
-import UiForm from './UiForm';
+import UiForm from './form/UiForm';
+
+import {FORM_WHITE_THEME} from '../utils/utils';
 
 function PopupWithForm({
   name,
@@ -46,6 +48,8 @@ function PopupWithForm({
         title={title}
         register={register}
         formState={formState}
+        theme={FORM_WHITE_THEME}
+        className="popup__form"
         onSubmit={handleSubmit(onSubmit)}
         submitButtonText={submitButtonText}
         isLoading={isLoading}

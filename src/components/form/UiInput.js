@@ -1,3 +1,6 @@
+import {useContext} from 'react';
+import FormThemeContext from '../../contexts/FormThemeContext';
+
 function UiInput({
   register,
   name,
@@ -8,11 +11,13 @@ function UiInput({
   className = '',
   ...restAttributes
 }) {
-  const inputClass = `edit-form__input${className ? ` ${className}` : ''}`
+  const formTheme = useContext(FormThemeContext);
+  const fieldClassName = `edit-form__field edit-form__field_theme_${formTheme}`;
+  const inputClass = `edit-form__input edit-form__input_theme_${formTheme}${className ? ` ${className}` : ''}`
   const errorBlockClass = `edit-form__error${error && isDirty ? ' edit-form__error_visible' : ''}`;
 
   return (
-    <label htmlFor={id} className="edit-form__field">
+    <label htmlFor={id} className={fieldClassName}>
       <input
         ref={validationRules ? register(validationRules) : register}
         id={id}

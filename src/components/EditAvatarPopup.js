@@ -1,14 +1,15 @@
 import PopupWithForm from './PopupWithForm';
-import UiInput from './UiInput';
+import UiInput from './form/UiInput';
 
 import {
-  createRequiredValidationRule, createUrlValidationRule,
+  createRequiredValidationRule,
+  createUrlValidationRule,
   createValidationRulesObject
 } from '../utils/validationRules';
 
 function EditAvatarPopup({isOpen, onClose, onUpdateAvatar, isLoading}) {
   function handleFormSubmit(formData) {
-    onUpdateAvatar(formData);
+    onUpdateAvatar(formData.avatar);
   }
 
   return (

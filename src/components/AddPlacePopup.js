@@ -1,5 +1,5 @@
 import PopupWithForm from './PopupWithForm';
-import UiInput from './UiInput';
+import UiInput from './form/UiInput';
 
 import {
   createMaxLengthValidationRule,

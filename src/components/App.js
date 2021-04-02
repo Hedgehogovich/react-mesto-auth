@@ -13,6 +13,7 @@ import Login from './Login';
 import Register from './Register';
 import ProtectedRoute from './ProtectedRoute';
 import NotAuthorizedProtectedRoute from './NotAuthorizedProtectedRoute';
+import InfoTooltip from './InfoTooltip';
 
 import CurrentUserContext from '../contexts/CurrentUserContext';
 
@@ -36,6 +37,9 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [cards, setCards] = useState([]);
   const [selectedPreviewCard, setSelectedPreviewCard] = useState(null);
+
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
+  const [isRegistrationSuccessful, setIsRegistrationSuccessful] = useState(null);
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -142,22 +146,43 @@ function App() {
       .finally(() => setIsCardDeleting(false));
   }
 
+  function handleRegistrationSuccess() {
+    setIsRegistrationSuccessful(true);
+    setIsInfoTooltipOpen(true);
+  }
+
+  function handleRegistrationFail() {
+    setIsRegistrationSuccessful(false);
+    setIsInfoTooltipOpen(true);
+  }
+
+  function handleLoginSuccess() {
+    
+  }
+
+  function handleLoginFail() {
+    setIsRegistrationSuccessful(false);
+    setIsInfoTooltipOpen(true);
+  }
+
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setSelectedPreviewCard(null);
     setCardToDelete(null);
+    setIsInfoTooltipOpen(false);
+    setIsRegistrationSuccessful(null);
   }
 
   useEffect(() => {
-    api.getAuthorizedUserInfo()
-      .then(setCurrentUser)
-      .catch(console.error);
+    // api.getAuthorizedUserInfo()
+    //   .then(setCurrentUser)
+    //   .catch(console.error);
 
-    api.getCards()
-      .then(setCards)
-      .catch(console.error);
+    // api.getCards()
+    //   .then(setCards)
+    //   .catch(console.error);
   }, []);
 
   return (
@@ -181,13 +206,17 @@ function App() {
             <NotAuthorizedProtectedRoute
               component={Login}
               path="/sign-in"
+              className="page__form"
             />
             <NotAuthorizedProtectedRoute
               component={Register}
               path="/sign-up"
+              onRegistrationSuccess={handleRegistrationSuccess}
+              onRegistrationFail={handleRegistrationFail}
+              className="page__form"
             />
           </Switch>
-          <Footer />
+          {currentUser && <Footer />}
         </div>
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
@@ -216,6 +245,11 @@ function App() {
         <ImagePopup
           card={selectedPreviewCard}
           onClose={closeAllPopups}
+        />
+        <InfoTooltip
+          isOpen={isInfoTooltipOpen}
+          onClose={closeAllPopups}
+          isRegistrationSuccessful={isRegistrationSuccessful}
         />
       </CurrentUserContext.Provider>
     </div>
