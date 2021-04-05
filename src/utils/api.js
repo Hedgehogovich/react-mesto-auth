@@ -1,7 +1,7 @@
 import IApi from './IApi';
 
 class Api extends IApi {
-  getAuthorizedUserInfo() {
+  getAuthorizedUser() {
     return this._makeRequest({
       action: '/users/me'
     }).then(this._getJsonFromResponse);

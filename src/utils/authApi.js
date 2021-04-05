@@ -17,9 +17,12 @@ class AuthApi extends IApi{
     }).then(this._getJsonFromResponse);
   }
 
-  getUserEmail() {
+  getUser(token) {
     return this._makeRequest({
       action: '/users/me',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     }).then(this._getJsonFromResponse);
   }
 }

@@ -7,6 +7,7 @@ class IApi {
   _makeRequest({
     action,
     method = 'GET',
+    headers = {},
     data = null,
   }) {
     if (!action) {
@@ -15,7 +16,7 @@ class IApi {
 
     const requestParams = {
       method,
-      headers: this._headers,
+      headers: {...this._headers, ...headers},
     };
 
     let url = this._baseUrl + action;

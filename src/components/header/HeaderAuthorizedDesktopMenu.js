@@ -1,17 +1,16 @@
 import {useContext} from 'react';
 
-import CurrentUserContext from '../../contexts/CurrentUserContext';
+import CurrentUserEmailContext from '../../contexts/CurrentUserEmailContext';
 
-function HeaderAuthorizedDesktopMenu() {
-  const currentUser = useContext(CurrentUserContext);
+function HeaderAuthorizedDesktopMenu({onSignOut}) {
+  const currentUserEmail = useContext(CurrentUserEmailContext);
 
   return (
     <div className="header__menu header__menu_desktop">
-      {/*todo: email*/}
       <p className="header__username">
-        {currentUser?.name}
+        {currentUserEmail}
       </p>
-      <button className="header__logout">
+      <button onClick={onSignOut} type="button" className="header__logout">
         Выйти
       </button>
     </div>

@@ -13,7 +13,7 @@ import {
 import {FORM_DARK_THEME} from '../utils/utils';
 import {authApi} from '../utils/authApi';
 
-function Register({onRegistrationSuccess, onRegistrationFail}) {
+function Register({onRegistration, onError}) {
   const [isRegisterRequestInProcess, setIsRegisterRequestInProcess] = useState(false);
   const {formState, register, trigger, handleSubmit, reset} = useForm({
     mode: 'onChange',
@@ -29,11 +29,11 @@ function Register({onRegistrationSuccess, onRegistrationFail}) {
     authApi.signUp(formData)
       .then(() => {
         reset();
-        onRegistrationSuccess();
+        onRegistration();
       })
       .catch(error => {
         console.error(error)
-        onRegistrationFail();
+        onError();
       })
       .finally(() => setIsRegisterRequestInProcess(false));
   }

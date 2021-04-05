@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {Switch} from 'react-router-dom';
 
-import Header from './header/Header';
+import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
 import ImagePopup from './ImagePopup';
@@ -16,8 +16,11 @@ import NotAuthorizedProtectedRoute from './NotAuthorizedProtectedRoute';
 import InfoTooltip from './InfoTooltip';
 
 import CurrentUserContext from '../contexts/CurrentUserContext';
+import CurrentUserEmailContext from '../contexts/CurrentUserEmailContext';
 
 import {api} from '../utils/api';
+import {authApi} from '../utils/authApi';
+import {AUTH_STORAGE_TOKEN_KEY} from '../utils/utils';
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -35,11 +38,12 @@ function App() {
   const [isLikeRequestInProcess, setIsLikeRequestInProcess] = useState(false);
 
   const [currentUser, setCurrentUser] = useState(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState('');
   const [cards, setCards] = useState([]);
   const [selectedPreviewCard, setSelectedPreviewCard] = useState(null);
 
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
-  const [isRegistrationSuccessful, setIsRegistrationSuccessful] = useState(null);
+  const [isRequestSuccessful, setIsRequestSuccessful] = useState(false);
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -147,22 +151,37 @@ function App() {
   }
 
   function handleRegistrationSuccess() {
-    setIsRegistrationSuccessful(true);
+    setIsRequestSuccessful(true);
     setIsInfoTooltipOpen(true);
   }
 
-  function handleRegistrationFail() {
-    setIsRegistrationSuccessful(false);
+  function handleRequestError() {
+    setIsRequestSuccessful(false);
     setIsInfoTooltipOpen(true);
   }
 
-  function handleLoginSuccess() {
-    
+  function authorizeUser() {
+    const token = localStorage.getItem(AUTH_STORAGE_TOKEN_KEY);
+
+    if (token) {
+      authApi.getUser(token)
+        .then(({data: {email}}) => setCurrentUserEmail(email))
+        .catch(error => {
+          localStorage.removeItem(AUTH_STORAGE_TOKEN_KEY);
+          console.error(error);
+        });
+    }
   }
 
-  function handleLoginFail() {
-    setIsRegistrationSuccessful(false);
-    setIsInfoTooltipOpen(true);
+  function handleLogin(token) {
+    localStorage.setItem(AUTH_STORAGE_TOKEN_KEY, token);
+    authorizeUser();
+  }
+
+  function handleSignOut() {
+    setCurrentUserEmail('');
+    setCurrentUser(null);
+    localStorage.removeItem(AUTH_STORAGE_TOKEN_KEY);
   }
 
   function closeAllPopups() {
@@ -172,85 +191,94 @@ function App() {
     setSelectedPreviewCard(null);
     setCardToDelete(null);
     setIsInfoTooltipOpen(false);
-    setIsRegistrationSuccessful(null);
   }
 
   useEffect(() => {
-    // api.getAuthorizedUserInfo()
-    //   .then(setCurrentUser)
-    //   .catch(console.error);
+    authorizeUser();
+  }, [])
 
-    // api.getCards()
-    //   .then(setCards)
-    //   .catch(console.error);
-  }, []);
+  useEffect(() => {
+    if (currentUserEmail) {
+      api.getAuthorizedUser()
+        .then(setCurrentUser)
+        .catch(console.error);
+
+      api.getCards()
+        .then(setCards)
+        .catch(console.error);
+    }
+  }, [currentUserEmail]);
 
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
-        <div className="page__content">
-          <Header />
-          <Switch>
-            <ProtectedRoute
-              component={Main}
-              path="/"
-              exact
-              onAddPlace={handleAddPlaceClick}
-              onEditAvatar={handleEditAvatarClick}
-              onEditProfile={handleEditProfileClick}
-              onCardClick={handleCardClick}
-              onCardDelete={handleCardDelete}
-              onCardLike={handleCardLike}
-              cards={cards}
-            />
-            <NotAuthorizedProtectedRoute
-              component={Login}
-              path="/sign-in"
-              className="page__form"
-            />
-            <NotAuthorizedProtectedRoute
-              component={Register}
-              path="/sign-up"
-              onRegistrationSuccess={handleRegistrationSuccess}
-              onRegistrationFail={handleRegistrationFail}
-              className="page__form"
-            />
-          </Switch>
-          {currentUser && <Footer />}
-        </div>
-        <EditProfilePopup
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          onUpdateUser={handleUpdateUser}
-          isLoading={isProfileUpdating}
-        />
-        <AddPlacePopup
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onAddPlace={handleAddPlace}
-          isLoading={isPlaceAdding}
-        />
-        <EditAvatarPopup
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          onUpdateAvatar={handleUpdateAvatar}
-          isLoading={isAvatarUpdating}
-        />
-        <CardDeleteConfirmationPopup
-          isOpen={!!cardToDelete}
-          onClose={closeAllPopups}
-          onCardDeleteConfirmation={handleCardDeleteConfirmation}
-          isLoading={isCardDeleting}
-        />
-        <ImagePopup
-          card={selectedPreviewCard}
-          onClose={closeAllPopups}
-        />
-        <InfoTooltip
-          isOpen={isInfoTooltipOpen}
-          onClose={closeAllPopups}
-          isRegistrationSuccessful={isRegistrationSuccessful}
-        />
+        <CurrentUserEmailContext.Provider value={currentUserEmail}>
+          <div className="page__content">
+            <Header onSignOut={handleSignOut} />
+            <Switch>
+              <ProtectedRoute
+                component={Main}
+                path="/"
+                exact
+                onAddPlace={handleAddPlaceClick}
+                onEditAvatar={handleEditAvatarClick}
+                onEditProfile={handleEditProfileClick}
+                onCardClick={handleCardClick}
+                onCardDelete={handleCardDelete}
+                onCardLike={handleCardLike}
+                cards={cards}
+              />
+              <NotAuthorizedProtectedRoute
+                component={Login}
+                path="/sign-in"
+                onLogin={handleLogin}
+                onError={handleRequestError}
+                className="page__form"
+              />
+              <NotAuthorizedProtectedRoute
+                component={Register}
+                path="/sign-up"
+                onRegistration={handleRegistrationSuccess}
+                onError={handleRequestError}
+                className="page__form"
+              />
+            </Switch>
+            {currentUser && <Footer />}
+          </div>
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups}
+            onUpdateUser={handleUpdateUser}
+            isLoading={isProfileUpdating}
+          />
+          <AddPlacePopup
+            isOpen={isAddPlacePopupOpen}
+            onClose={closeAllPopups}
+            onAddPlace={handleAddPlace}
+            isLoading={isPlaceAdding}
+          />
+          <EditAvatarPopup
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups}
+            onUpdateAvatar={handleUpdateAvatar}
+            isLoading={isAvatarUpdating}
+          />
+          <CardDeleteConfirmationPopup
+            isOpen={!!cardToDelete}
+            onClose={closeAllPopups}
+            onCardDeleteConfirmation={handleCardDeleteConfirmation}
+            isLoading={isCardDeleting}
+          />
+          <ImagePopup
+            card={selectedPreviewCard}
+            onClose={closeAllPopups}
+          />
+          <InfoTooltip
+            isOpen={isInfoTooltipOpen}
+            onClose={closeAllPopups}
+            isSuccessful={isRequestSuccessful}
+          />
+        </CurrentUserEmailContext.Provider>
       </CurrentUserContext.Provider>
     </div>
   );

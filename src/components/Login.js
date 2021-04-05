@@ -12,7 +12,7 @@ import {
 import {FORM_DARK_THEME} from '../utils/utils';
 import {authApi} from '../utils/authApi';
 
-function Login({className, onLoginSuccess, onLoginFail}) {
+function Login({className, onLogin, onError}) {
   const [isLoginRequestInProcess, setIsLoginRequestInProcess] = useState(false);
   const {formState, register, trigger, handleSubmit} = useForm({
     mode: 'onChange',
@@ -28,11 +28,11 @@ function Login({className, onLoginSuccess, onLoginFail}) {
 
     authApi.signIn(formData)
       .then(({token}) => {
-        onLoginSuccess(token);
+        onLogin(token);
       })
       .catch(error => {
         console.error(error);
-        onLoginFail();
+        onError();
       })
       .finally(() => setIsLoginRequestInProcess(false));
   }

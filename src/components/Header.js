@@ -1,13 +1,13 @@
 import {useContext, useState} from 'react';
 
-import HeaderUnauthorizedLink from './HeaderUnauthorizedLink';
-import HeaderAuthorizedBlock from './HeaderAuthorizedBlock';
-import HeaderLogo from './HeaderLogo';
-import HeaderAuthorizedMobileMenu from './HeaderAuthorizedMobileMenu';
+import HeaderUnauthorizedLink from './header/HeaderUnauthorizedLink';
+import HeaderAuthorizedBlock from './header/HeaderAuthorizedBlock';
+import HeaderLogo from './header/HeaderLogo';
+import HeaderAuthorizedMobileMenu from './header/HeaderAuthorizedMobileMenu';
 
-import CurrentUserContext from '../../contexts/CurrentUserContext';
+import CurrentUserContext from '../contexts/CurrentUserContext';
 
-function Header() {
+function Header({onSignOut}) {
   const currentUser = useContext(CurrentUserContext);
   const [isMobileMenuOpened, setIsMobileMenuOpened] = useState(false);
 
@@ -17,12 +17,18 @@ function Header() {
 
   return (
     <>
-      {currentUser && <HeaderAuthorizedMobileMenu isOpened={isMobileMenuOpened}/>}
+      {currentUser && (
+        <HeaderAuthorizedMobileMenu
+          onSignOut={onSignOut}
+          isOpened={isMobileMenuOpened}
+        />
+      )}
       <header className="header page__header">
         <HeaderLogo/>
         {
           currentUser
             ? <HeaderAuthorizedBlock
+                onSignOut={onSignOut}
                 isMobileMenuOpened={isMobileMenuOpened}
                 onMenuToggle={handleMobileMenuToggle}
               />

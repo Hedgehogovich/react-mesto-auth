@@ -1,19 +1,18 @@
 import {useContext} from 'react';
 
-import CurrentUserContext from '../../contexts/CurrentUserContext';
+import CurrentUserEmailContext from '../../contexts/CurrentUserEmailContext';
 
-function HeaderAuthorizedMobileMenu({isOpened}) {
-  const currentUser = useContext(CurrentUserContext);
+function HeaderAuthorizedMobileMenu({isOpened, onSignOut}) {
+  const currentUserEmail = useContext(CurrentUserEmailContext);
   const menuClassName = 'header__menu header__menu_mobile'
     + (isOpened ? ' header__menu_mobile_opened' : '');
 
   return (
     <div id="mobile-menu" className={menuClassName}>
-      {/*todo: email*/}
       <p className="header__username">
-        {currentUser?.name}
+        {currentUserEmail}
       </p>
-      <button className="header__logout">
+      <button onClick={onSignOut} type="button" className="header__logout">
         Выйти
       </button>
     </div>
