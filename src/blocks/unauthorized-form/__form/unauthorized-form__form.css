@@ -7,3 +7,9 @@
   align-items: center;
   justify-content: center;
 }
+
+@media screen and (max-width: 540px) {
+  .unauthorized-form__form {
+    max-width: 260px;
+  }
+}

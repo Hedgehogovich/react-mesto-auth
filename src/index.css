@@ -88,6 +88,7 @@
 @import url('blocks/info-tooltip/__ico/_type/info-tooltip__ico_type_error.css');
 @import url('blocks/info-tooltip/__ico/_type/info-tooltip__ico_type_success.css');
 @import url('blocks/info-tooltip/__text/info-tooltip__text.css');
+@import url('blocks/info-tooltip/__close/info-tooltip__close.css');
 
 body {
   background-color: #000;

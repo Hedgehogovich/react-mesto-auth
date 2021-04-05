@@ -4,6 +4,9 @@
 
 @media screen and (max-width: 540px) {
   .edit-form__title_theme_white {
+    font-size: 18px;
+    line-height: 22px;
+
     margin-bottom: 63px;
   }
 }

@@ -12,6 +12,7 @@ function InfoTooltip({onClose, isOpen, isSuccessful}) {
       isOpen={isOpen}
       popupName="info-tooltip"
       wrapperClassName="info-tooltip__container"
+      closeButtonClassName="info-tooltip__close"
     >
       <div className={icoClassName}/>
       <p className="info-tooltip__text">

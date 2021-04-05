@@ -15,11 +15,16 @@ function Header({onSignOut}) {
     setIsMobileMenuOpened(!isMobileMenuOpened);
   }
 
+  function handleSignOut() {
+    setIsMobileMenuOpened(false);
+    onSignOut();
+  }
+
   return (
     <>
       {currentUser && (
         <HeaderAuthorizedMobileMenu
-          onSignOut={onSignOut}
+          onSignOut={handleSignOut}
           isOpened={isMobileMenuOpened}
         />
       )}
@@ -28,7 +33,7 @@ function Header({onSignOut}) {
         {
           currentUser
             ? <HeaderAuthorizedBlock
-                onSignOut={onSignOut}
+                onSignOut={handleSignOut}
                 isMobileMenuOpened={isMobileMenuOpened}
                 onMenuToggle={handleMobileMenuToggle}
               />

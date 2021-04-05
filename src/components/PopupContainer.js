@@ -8,11 +8,13 @@ function PopupContainer({
   children,
   onClose,
   wrapperClassName,
+  closeButtonClassName,
   isBlackBackground = false,
 }) {
   const backgroundClass = isBlackBackground ? ' popup_background_black' : ' popup_background_dark';
   const isOpenClass = isOpen ? ' popup_opened' : '';
   const rootClassName = `popup${backgroundClass} ${popupName}${isOpenClass}`;
+  const closeClassName = `popup__close${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`;
   const popupWrapperClassName = `popup__container${wrapperClassName ? ` ${wrapperClassName}` : ''}`;
 
   function onBackgroundClick({target, currentTarget}) {
@@ -39,7 +41,7 @@ function PopupContainer({
     <div onClick={onBackgroundClick} className={rootClassName}>
       <div className={popupWrapperClassName}>
         {children}
-        <button onClick={onClose} type="button" className="popup__close" aria-label="Закрыть всплывающее окно" />
+        <button onClick={onClose} type="button" className={closeClassName} aria-label="Закрыть всплывающее окно" />
       </div>
     </div>
   );
