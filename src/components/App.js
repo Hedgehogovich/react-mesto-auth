@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {Switch, useHistory} from 'react-router-dom';
 
 import Header from './Header';
@@ -49,6 +49,33 @@ function App() {
 
   const [isRegisterRequestInProcess, setIsRegisterRequestInProcess] = useState(false);
   const [isLoginRequestInProcess, setIsLoginRequestInProcess] = useState(false);
+
+  function handleRequestError(error) {
+    console.error(error);
+    setIsRequestSuccessful(false);
+    setIsInfoTooltipOpen(true);
+  }
+
+  function handleRequestSuccess() {
+    setIsRequestSuccessful(true);
+    setIsInfoTooltipOpen(true);
+  }
+
+  const authorizeUser = useCallback(() => {
+    const token = localStorage.getItem(AUTH_STORAGE_TOKEN_KEY);
+
+    if (token) {
+      authApi.getUser(token)
+        .then(({data: {email}}) => setCurrentUserEmail(email))
+        .catch(error => {
+          localStorage.removeItem(AUTH_STORAGE_TOKEN_KEY);
+          handleRequestError(error);
+        })
+        .finally(() => {
+          setIsLoginRequestInProcess(false);
+        });
+    }
+  }, [])
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -155,17 +182,6 @@ function App() {
       .finally(() => setIsCardDeleting(false));
   }
 
-  function handleRequestError(error) {
-    console.error(error);
-    setIsRequestSuccessful(false);
-    setIsInfoTooltipOpen(true);
-  }
-
-  function handleRequestSuccess() {
-    setIsRequestSuccessful(true);
-    setIsInfoTooltipOpen(true);
-  }
-
   function handleRegistration(formData) {
     if (isRegisterRequestInProcess) {
       return;
@@ -180,22 +196,6 @@ function App() {
       })
       .catch(handleRequestError)
       .finally(() => setIsRegisterRequestInProcess(false));
-  }
-
-  function authorizeUser() {
-    const token = localStorage.getItem(AUTH_STORAGE_TOKEN_KEY);
-
-    if (token) {
-      authApi.getUser(token)
-        .then(({data: {email}}) => setCurrentUserEmail(email))
-        .catch(error => {
-          localStorage.removeItem(AUTH_STORAGE_TOKEN_KEY);
-          handleRequestError(error);
-        })
-        .finally(() => {
-          setIsLoginRequestInProcess(false);
-        });
-    }
   }
 
   function handleLogin(formData) {
@@ -233,7 +233,7 @@ function App() {
 
   useEffect(() => {
     authorizeUser();
-  }, [])
+  }, [authorizeUser])
 
   useEffect(() => {
     if (currentUserEmail) {
@@ -276,9 +276,8 @@ function App() {
               <NotAuthorizedProtectedRoute
                 component={Register}
                 path="/sign-up"
-                isLoading={isRegisterRequestInProcess}
                 onSubmit={handleRegistration}
-                onError={handleRequestError}
+                isLoading={isRegisterRequestInProcess}
                 className="page__form"
               />
             </Switch>
