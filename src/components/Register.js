@@ -1,46 +1,21 @@
-import {useEffect, useState} from 'react';
-import {useForm} from 'react-hook-form';
 import {Link} from 'react-router-dom';
 
 import UiForm from './form/UiForm';
 import UiInput from './form/UiInput';
 
-import {
-  createEmailValidationRule, createMinLengthValidationRule,
-  createRequiredValidationRule,
-  createValidationRulesObject
-} from '../utils/validationRules';
+import useForm from '../hooks/useForm';
+
 import {FORM_DARK_THEME} from '../utils/utils';
-import {authApi} from '../utils/authApi';
 
-function Register({onRegistration, onError}) {
-  const [isRegisterRequestInProcess, setIsRegisterRequestInProcess] = useState(false);
-  const {formState, register, trigger, handleSubmit, reset} = useForm({
-    mode: 'onChange',
-  })
-
-  function handleFormSubmit(formData) {
-    if (isRegisterRequestInProcess) {
-      return;
-    }
-
-    setIsRegisterRequestInProcess(true);
-
-    authApi.signUp(formData)
-      .then(() => {
-        reset();
-        onRegistration();
-      })
-      .catch(error => {
-        console.error(error)
-        onError();
-      })
-      .finally(() => setIsRegisterRequestInProcess(false));
-  }
-
-  useEffect(() => {
-    trigger();
-  }, [trigger])
+function Register({onSubmit, isLoading}) {
+  const {
+    ref,
+    isValid,
+    isDirty,
+    dirtyFields,
+    validationMessages,
+    handleSubmit,
+  } = useForm();
 
   return (
     <main className="unauthorized-form page__form">
@@ -49,10 +24,13 @@ function Register({onRegistration, onError}) {
         title="Регистрация"
         submitButtonText="Зарегистрироваться"
         loadingInProgressText="Подождите"
-        isLoading={isRegisterRequestInProcess}
-        formState={formState}
-        register={register}
-        onSubmit={handleSubmit(handleFormSubmit)}
+        isLoading={isLoading}
+        ref={ref}
+        isValid={isValid}
+        isDirty={isDirty}
+        dirtyFields={dirtyFields}
+        validationMessages={validationMessages}
+        onSubmit={handleSubmit(onSubmit)}
         className="unauthorized-form__form"
         theme={FORM_DARK_THEME}
       >
@@ -61,20 +39,15 @@ function Register({onRegistration, onError}) {
           id="email"
           placeholder="Email"
           type="email"
-          validationRules={createValidationRulesObject(
-            createRequiredValidationRule(),
-            createEmailValidationRule()
-          )}
+          required
         />
         <UiInput
           name="password"
           id="password"
           type="password"
+          autoComplete="new-password"
           placeholder="Пароль"
-          validationRules={createValidationRulesObject(
-            createRequiredValidationRule(),
-            createMinLengthValidationRule(8),
-          )}
+          required
         />
       </UiForm>
       <Link to="/sign-in" className="unauthorized-form__link">

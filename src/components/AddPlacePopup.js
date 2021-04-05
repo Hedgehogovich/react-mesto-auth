@@ -1,15 +1,7 @@
 import PopupWithForm from './PopupWithForm';
 import UiInput from './form/UiInput';
 
-import {
-  createMaxLengthValidationRule,
-  createMinLengthValidationRule,
-  createRequiredValidationRule,
-  createUrlValidationRule,
-  createValidationRulesObject
-} from '../utils/validationRules';
-
-function AddPlacePopup({isOpen, onClose, onAddPlace, isLoading}) {
+function AddPlacePopup({isOpen, onClose, isLoading, onAddPlace}) {
   function handleFormSubmit(formData) {
     onAddPlace(formData);
   }
@@ -28,21 +20,16 @@ function AddPlacePopup({isOpen, onClose, onAddPlace, isLoading}) {
         name="name"
         type="text"
         placeholder="Название"
-        validationRules={createValidationRulesObject(
-          createRequiredValidationRule(),
-          createMinLengthValidationRule(2),
-          createMaxLengthValidationRule(30),
-        )}
+        minLength="2"
+        maxLength="30"
+        required
       />
       <UiInput
         id="picture"
         name="link"
         type="url"
         placeholder="Ссылка на картинку"
-        validationRules={createValidationRulesObject(
-          createRequiredValidationRule(),
-          createUrlValidationRule()
-        )}
+        required
       />
     </PopupWithForm>
   );

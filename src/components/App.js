@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {Switch} from 'react-router-dom';
+import {Switch, useHistory} from 'react-router-dom';
 
 import Header from './Header';
 import Main from './Main';
@@ -23,6 +23,8 @@ import {authApi} from '../utils/authApi';
 import {AUTH_STORAGE_TOKEN_KEY} from '../utils/utils';
 
 function App() {
+  const history = useHistory();
+
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isProfileUpdating, setIsProfileUpdating] = useState(false);
 
@@ -45,6 +47,9 @@ function App() {
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
   const [isRequestSuccessful, setIsRequestSuccessful] = useState(false);
 
+  const [isRegisterRequestInProcess, setIsRegisterRequestInProcess] = useState(false);
+  const [isLoginRequestInProcess, setIsLoginRequestInProcess] = useState(false);
+
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
   }
@@ -65,7 +70,7 @@ function App() {
     setCardToDelete(card);
   }
 
-  function handleUpdateUser(userData) {
+  function handleUpdateProfile(userData) {
     if (isProfileUpdating) {
       return;
     }
@@ -150,14 +155,31 @@ function App() {
       .finally(() => setIsCardDeleting(false));
   }
 
-  function handleRegistrationSuccess() {
+  function handleRequestError(error) {
+    console.error(error);
+    setIsRequestSuccessful(false);
+    setIsInfoTooltipOpen(true);
+  }
+
+  function handleRequestSuccess() {
     setIsRequestSuccessful(true);
     setIsInfoTooltipOpen(true);
   }
 
-  function handleRequestError() {
-    setIsRequestSuccessful(false);
-    setIsInfoTooltipOpen(true);
+  function handleRegistration(formData) {
+    if (isRegisterRequestInProcess) {
+      return;
+    }
+
+    setIsRegisterRequestInProcess(true);
+
+    authApi.signUp(formData)
+      .then(() => {
+        handleRequestSuccess();
+        history.push('/sign-in');
+      })
+      .catch(handleRequestError)
+      .finally(() => setIsRegisterRequestInProcess(false));
   }
 
   function authorizeUser() {
@@ -168,14 +190,30 @@ function App() {
         .then(({data: {email}}) => setCurrentUserEmail(email))
         .catch(error => {
           localStorage.removeItem(AUTH_STORAGE_TOKEN_KEY);
-          console.error(error);
+          handleRequestError(error);
+        })
+        .finally(() => {
+          setIsLoginRequestInProcess(false);
         });
     }
   }
 
-  function handleLogin(token) {
-    localStorage.setItem(AUTH_STORAGE_TOKEN_KEY, token);
-    authorizeUser();
+  function handleLogin(formData) {
+    if (isLoginRequestInProcess) {
+      return;
+    }
+
+    setIsLoginRequestInProcess(true);
+
+    authApi.signIn(formData)
+      .then(({token}) => {
+        localStorage.setItem(AUTH_STORAGE_TOKEN_KEY, token);
+        authorizeUser();
+      })
+      .catch(error => {
+        handleRequestError(error);
+        setIsLoginRequestInProcess(false);
+      });
   }
 
   function handleSignOut() {
@@ -231,14 +269,15 @@ function App() {
               <NotAuthorizedProtectedRoute
                 component={Login}
                 path="/sign-in"
-                onLogin={handleLogin}
-                onError={handleRequestError}
+                onSubmit={handleLogin}
+                isLoading={isLoginRequestInProcess}
                 className="page__form"
               />
               <NotAuthorizedProtectedRoute
                 component={Register}
                 path="/sign-up"
-                onRegistration={handleRegistrationSuccess}
+                isLoading={isRegisterRequestInProcess}
+                onSubmit={handleRegistration}
                 onError={handleRequestError}
                 className="page__form"
               />
@@ -248,7 +287,7 @@ function App() {
           <EditProfilePopup
             isOpen={isEditProfilePopupOpen}
             onClose={closeAllPopups}
-            onUpdateUser={handleUpdateUser}
+            onUpdateUser={handleUpdateProfile}
             isLoading={isProfileUpdating}
           />
           <AddPlacePopup

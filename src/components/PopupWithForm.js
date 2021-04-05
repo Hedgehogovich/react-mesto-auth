@@ -1,8 +1,9 @@
 import {useEffect} from 'react';
-import {useForm} from 'react-hook-form';
 
 import PopupContainer from './PopupContainer';
 import UiForm from './form/UiForm';
+
+import useForm from '../hooks/useForm';
 
 import {FORM_WHITE_THEME} from '../utils/utils';
 
@@ -18,23 +19,18 @@ function PopupWithForm({
   submitButtonText = 'Сохранить'
 }) {
   const {
+    ref,
+    isValid,
+    isDirty,
+    dirtyFields,
+    validationMessages,
     handleSubmit,
-    trigger,
     reset,
-    register,
-    formState
-  } = useForm({
-    mode: 'onChange',
-    ...(controlledValues ? {defaultValues: controlledValues} : {}),
-  });
+  } = useForm();
 
   useEffect(() => {
-    if (isOpen) {
-      trigger();
-    } else {
-      reset(controlledValues ? {...controlledValues} : undefined);
-    }
-  }, [trigger, reset, controlledValues, isOpen]);
+    reset(controlledValues ? {...controlledValues} : undefined);
+  }, [reset, controlledValues, isOpen]);
 
   return (
     <PopupContainer
@@ -44,10 +40,13 @@ function PopupWithForm({
       onClose={onClose}
     >
       <UiForm
+        ref={ref}
         name={name}
         title={title}
-        register={register}
-        formState={formState}
+        isValid={isValid}
+        isDirty={isDirty}
+        dirtyFields={dirtyFields}
+        validationMessages={validationMessages}
         theme={FORM_WHITE_THEME}
         className="popup__form"
         onSubmit={handleSubmit(onSubmit)}

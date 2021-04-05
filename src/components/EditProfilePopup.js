@@ -5,12 +5,6 @@ import PopupWithForm from './PopupWithForm';
 import UiInput from './form/UiInput';
 
 import CurrentUserContext from '../contexts/CurrentUserContext';
-import {
-  createMaxLengthValidationRule,
-  createMinLengthValidationRule,
-  createRequiredValidationRule,
-  createValidationRulesObject
-} from '../utils/validationRules';
 
 function EditProfilePopup({isOpen, onClose, onUpdateUser, isLoading}) {
   const currentUser = useContext(CurrentUserContext);
@@ -43,21 +37,17 @@ function EditProfilePopup({isOpen, onClose, onUpdateUser, isLoading}) {
         id="name"
         name="name"
         type="text"
-        validationRules={createValidationRulesObject(
-          createRequiredValidationRule(),
-          createMinLengthValidationRule(2),
-          createMaxLengthValidationRule(40),
-        )}
+        minLength="2"
+        maxLength="40"
+        required
       />
       <UiInput
         id="about"
         name="about"
         type="text"
-        validationRules={createValidationRulesObject(
-          createRequiredValidationRule(),
-          createMinLengthValidationRule(2),
-          createMaxLengthValidationRule(200),
-        )}
+        minLength="2"
+        maxLength="200"
+        required
       />
     </PopupWithForm>
   );

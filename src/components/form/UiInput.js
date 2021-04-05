@@ -1,13 +1,12 @@
 import {useContext} from 'react';
+
 import FormThemeContext from '../../contexts/FormThemeContext';
 
 function UiInput({
-  register,
   name,
   id,
   isDirty,
   error,
-  validationRules,
   className = '',
   ...restAttributes
 }) {
@@ -19,7 +18,6 @@ function UiInput({
   return (
     <label htmlFor={id} className={fieldClassName}>
       <input
-        ref={validationRules ? register(validationRules) : register}
         id={id}
         name={name}
         className={inputClass}
@@ -27,7 +25,7 @@ function UiInput({
         {...restAttributes}
       />
       <span id={`${id}-error`} className={errorBlockClass}>
-        {error?.message}
+        {error}
       </span>
     </label>
   );

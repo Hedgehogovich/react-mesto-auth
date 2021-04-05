@@ -1,12 +1,6 @@
 import PopupWithForm from './PopupWithForm';
 import UiInput from './form/UiInput';
 
-import {
-  createRequiredValidationRule,
-  createUrlValidationRule,
-  createValidationRulesObject
-} from '../utils/validationRules';
-
 function EditAvatarPopup({isOpen, onClose, onUpdateAvatar, isLoading}) {
   function handleFormSubmit(formData) {
     onUpdateAvatar(formData.avatar);
@@ -26,10 +20,7 @@ function EditAvatarPopup({isOpen, onClose, onUpdateAvatar, isLoading}) {
         name="avatar"
         type="url"
         placeholder="Ссылка на аватар"
-        validationRules={createValidationRulesObject(
-          createRequiredValidationRule(),
-          createUrlValidationRule()
-        )}
+        required
       />
     </PopupWithForm>
   );
