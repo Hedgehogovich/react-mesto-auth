@@ -33,10 +33,10 @@ function useForm() {
 
   const mutationObserver = useRef(new MutationObserver(handleChildrenChange));
 
-  const updateValidation = useCallback((input) => {
+  const updateValidation = useCallback((targetInput) => {
     updateIsValid();
-    if (input) {
-      setValidationMessageValue(input);
+    if (targetInput) {
+      setValidationMessageValue(targetInput);
     } else {
       inputs.forEach(inputItem => {
         setValidationMessageValue(inputItem);
